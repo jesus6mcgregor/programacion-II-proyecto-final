@@ -1,0 +1,313 @@
+import java.util.List;
+import java.util.Scanner;
+
+public class Main {
+    public static void main(String[] args) {
+        // Creamos un objeto Scanner para leer la entrada del usuario
+        Scanner scanner = new Scanner(System.in);
+        // Creamos un objeto Biblioteca para interactuar con la biblioteca
+        Biblioteca biblioteca = new Biblioteca();
+
+        // Variable para controlar el bucle while
+        boolean continuar = true;
+        while (continuar) {
+            // Mostramos el menú al usuario
+            mostrarMenu();
+            // Leemos la opción seleccionada por el usuario
+            int opcion = scanner.nextInt();
+            scanner.nextLine(); // Limpiar el buffer del scanner
+
+            // Procesamos la opción seleccionada
+            switch (opcion) {
+                case 1:
+                    // Agregar un nuevo libro
+                    System.out.print("Ingrese el título del libro: ");
+                    String tituloLibro = scanner.nextLine();
+                    System.out.print("Ingrese el autor del libro: ");
+                    String autorLibro = scanner.nextLine();
+                    biblioteca.agregarLibro(tituloLibro, autorLibro);
+                    break;
+                case 2:
+                    // Registrar un nuevo usuario
+                    System.out.print("Ingrese el nombre del usuario: ");
+                    String nombreUsuario = scanner.nextLine();
+                    biblioteca.agregarUsuario(nombreUsuario);
+                    break;
+                case 3:
+                    // Prestar un libro
+                    System.out.print("Ingrese el ID del libro: ");
+                    int idLibroPrestamo = scanner.nextInt();
+                    System.out.print("Ingrese el ID del usuario: ");
+                    int idUsuarioPrestamo = scanner.nextInt();
+                    biblioteca.prestarLibro(idLibroPrestamo, idUsuarioPrestamo);
+                    break;
+                case 4:
+                    // Devolver un libro
+                    System.out.print("Ingrese el ID del libro: ");
+                    int idLibroDevolucion = scanner.nextInt();
+                    System.out.print("Ingrese el ID del usuario: ");
+                    int idUsuarioDevolucion = scanner.nextInt();
+                    biblioteca.devolverLibro(idLibroDevolucion, idUsuarioDevolucion);
+                    break;
+                case 5:
+                    // Buscar libros por título
+                    System.out.print("Ingrese el título del libro a buscar: ");
+                    String tituloBusqueda = scanner.nextLine();
+                    List<Libro> librosPorTitulo = biblioteca.buscarLibrosPorTitulo(tituloBusqueda);
+                    mostrarResultados(librosPorTitulo);
+                    break;
+                case 6:
+                    // Buscar libros por autor
+                    System.out.print("Ingrese el autor del libro a buscar: ");
+                    String autorBusqueda = scanner.nextLine();
+                    List<Libro> librosPorAutor = biblioteca.buscarLibrosPorAutor(autorBusqueda);
+                    mostrarResultados(librosPorAutor);
+                    break;
+                case 7:
+                    // Mostrar libros disponibles
+                    List<Libro> librosDisponibles = biblioteca.librosDisponibles();
+                    mostrarResultados(librosDisponibles);
+                    break;
+                case 8:
+                    // Mostrar libros prestados por un usuario
+                    System.out.print("Ingrese el ID del usuario: ");
+                    int idUsuarioConsulta = scanner.nextInt();
+                    List<Libro> librosPrestadosUsuario = biblioteca.librosPrestadosPorUsuario(idUsuarioConsulta);
+                    mostrarResultados(librosPrestadosUsuario);
+                    break;
+                case 9:
+                    // Salir del programa
+                    continuar = false;
+                    System.out.println("Saliendo del programa.");
+                    break;
+                default:
+                    System.out.println("Opción inválida, por favor ingrese un número del 1 al 9.");
+                    break;
+            }
+        }
+        scanner.close();
+    }
+
+    // Método para mostrar el menú al usuario
+    public static void mostrarMenu() {
+        System.out.println("\n--- Biblioteca - Menú ---");
+        System.out.println("1. Agregar nuevo libro");
+        System.out.println("2. Registrar nuevo usuario");
+        System.out.println("3. Prestar libro");
+        System.out.println("4. Devolver libro");
+        System.out.println("5. Buscar libros por título");
+        System.out.println("6. Buscar libros por autor");
+        System.out.println("7. Mostrar libros disponibles");
+        System.out.println("8. Mostrar libros prestados por un usuario");
+        System.out.println("9. Salir");
+        System.out.print("Ingrese su opción: ");
+    }
+
+    // Método para mostrar los resultados de una búsqueda
+    public static void mostrarResultados(List<Libro> libros) {
+        if (libros.isEmpty()) {
+            System.out.println("No se encontraron libros.");
+        } else {
+            System.out.println("Resultados de la búsqueda:");
+            for (Libro libro : libros) {
+                System.out.println(libro.getTitulo() + " (" + libro.getAutor() + ")");
+            }
+        }
+    }
+}
+class Libro {
+    // Atributos del libro
+    private int idLibro;
+    private String titulo;
+    private String autor;
+    private boolean prestado;
+
+    // Constructor del libro
+    public Libro(int idLibro, String titulo, String autor) {
+        this.idLibro = idLibro;
+        this.titulo = titulo;
+        this.autor = autor;
+        this.prestado = false; // Inicialmente no prestado
+    }
+
+    // Métodos para obtener información del libro
+    public int getIdLibro() {
+        return idLibro;
+    }
+
+    public String getTitulo() {
+        return titulo;
+    }
+
+    public String getAutor() {
+        return autor;
+    }
+
+    public boolean estaPrestado() {
+        return prestado;
+    }
+
+    // Métodos para prestar y devolver el libro
+    public void prestar() {
+        prestado = true;
+    }
+
+    public void devolver() {
+        prestado = false;
+    }
+}
+
+class Usuario {
+    // Atributos del usuario
+    private int idUsuario;
+    private String nombre;
+    private List<Libro> librosPrestados;
+
+    // Constructor del usuario
+    public Usuario(int idUsuario, String nombre) {
+        this.idUsuario = idUsuario;
+        this.nombre = nombre;
+        this.librosPrestados = new ArrayList<>();
+    }
+
+    // Métodos para obtener información del usuario
+    public int getIdUsuario() {
+        return idUsuario;
+    }
+
+    public String getNombre() {
+        return nombre;
+    }
+
+    public List<Libro> getLibrosPrestados() {
+        return librosPrestados;
+    }
+
+    // Métodos para tomar prestado y devolver un libro
+    public boolean tomarPrestado(Libro libro) {
+        if (!libro.estaPrestado()) {
+            libro.prestar();
+            librosPrestados.add(libro);
+            return true;
+        }
+        return false;
+    }
+
+    public boolean devolver(Libro libro) {
+        if (librosPrestados.contains(libro)) {
+            libro.devolver();
+            librosPrestados.remove(libro);
+            return true;
+        }
+        return false;
+    }
+}
+
+class Biblioteca {
+    // Atributos de la biblioteca
+    private Map<Integer, Libro> catalogo;
+    private Map<Integer, Usuario> usuarios;
+    private int ultimoIdLibro;
+    private int ultimoIdUsuario;
+
+    // Constructor de la biblioteca
+    public Biblioteca() {
+        catalogo = new HashMap<>();
+        usuarios = new HashMap<>();
+        ultimoIdLibro = 0;
+        ultimoIdUsuario = 0;
+    }
+
+    // Método para agregar un nuevo libro
+    public void agregarLibro(String titulo, String autor) {
+        ultimoIdLibro++;
+        Libro libro = new Libro(ultimoIdLibro, titulo, autor);
+        catalogo.put(ultimoIdLibro, libro);
+        System.out.println("Libro agregado correctamente con ID: " + ultimoIdLibro);
+    }
+
+    // Método para agregar un nuevo usuario
+    public void agregarUsuario(String nombre) {
+        ultimoIdUsuario++;
+        Usuario usuario = new Usuario(ultimoIdUsuario, nombre);
+        usuarios.put(ultimoIdUsuario, usuario);
+        System.out.println("Usuario registrado correctamente con ID: " + ultimoIdUsuario);
+    }
+
+    // Método para buscar un libro por ID
+    public Libro buscarLibroPorId(int idLibro) {
+        return catalogo.getOrDefault(idLibro, null);
+    }
+
+    // Método para buscar libros por título
+    public List<Libro> buscarLibrosPorTitulo(String titulo) {
+        List<Libro> librosEncontrados = new ArrayList<>();
+        for (Libro libro : catalogo.values()) {
+            if (libro.getTitulo().equalsIgnoreCase(titulo)) {
+                librosEncontrados.add(libro);
+            }
+        }
+        return librosEncontrados;
+    }
+
+    // Método para buscar libros por autor
+    public List<Libro> buscarLibrosPorAutor(String autor) {
+        List<Libro> librosEncontrados = new ArrayList<>();
+        for (Libro libro : catalogo.values()) {
+            if (libro.getAutor().equalsIgnoreCase(autor)) {
+                librosEncontrados.add(libro);
+            }
+        }
+        return librosEncontrados;
+    }
+ public List<Libro> buscarLibrosPorAutor(String autor) {
+        List<Libro> librosEncontrados = new ArrayList<>();
+        for (Libro libro : catalogo.values()) {
+            if (libro.getAutor().equalsIgnoreCase(autor)) {
+                librosEncontrados.add(libro);
+            }
+        }
+        return librosEncontrados;
+    }
+
+// Método para mostrar libros prestados por un usuario
+    public List<Libro> librosPrestadosPorUsuario(int idUsuario) {
+        Usuario usuario = usuarios.getOrDefault(idUsuario, null);
+        if (usuario != null) {
+            return usuario.getLibrosPrestados();
+        } else {
+            return new ArrayList<>();
+        }
+    }
+
+    // Método para prestar un libro
+    public void prestarLibro(int idLibro, int idUsuario) {
+        Libro libro = buscarLibroPorId(idLibro);
+        Usuario usuario = usuarios.getOrDefault(idUsuario, null);
+        if (libro != null && usuario != null) {
+            if (libro.estaPrestado()) {
+                System.out.println("El libro ya está prestado.");
+            } else {
+                usuario.tomarPrestado(libro);
+                System.out.println("Libro prestado correctamente.");
+            }
+        } else {
+            System.out.println("Libro o usuario no encontrado.");
+        }
+    }
+
+    // Método para devolver un libro
+    public void devolverLibro(int idLibro, int idUsuario) {
+        Libro libro = buscarLibroPorId(idLibro);
+        Usuario usuario = usuarios.getOrDefault(idUsuario, null);
+        if (libro != null && usuario != null) {
+            if (usuario.devolver(libro)) {
+                System.out.println("Libro devuelto correctamente.");
+            } else {
+                System.out.println("El libro no está prestado por este usuario.");
+            }
+        } else {
+            System.out.println("Libro o usuario no encontrado.");
+        }
+    }
+}
